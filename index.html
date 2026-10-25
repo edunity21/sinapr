@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e141b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="원고 없이 하는 발표를 위한 촬영 연습 앱 — 내 모습, 원고 자막, 권장·예측 타임라인을 한 화면에서">
+  <title>BRIDGE 발표 리허설</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+<!-- ───────── 1. 준비 화면 ───────── -->
+<main id="setup" class="view setup">
+  <header class="hero">
+    <svg class="hero-bridge" viewBox="0 0 640 120" aria-hidden="true">
+      <defs>
+        <linearGradient id="g-arch" x1="0" x2="1">
+          <stop offset="0" stop-color="#14b8a6"/><stop offset=".55" stop-color="#22c55e"/><stop offset="1" stop-color="#f59e0b"/>
+        </linearGradient>
+      </defs>
+      <path d="M8 96 H632" stroke="currentColor" stroke-opacity=".25" stroke-width="2"/>
+      <path d="M20 96 Q95 10 170 96 Q245 10 320 96 Q395 10 470 96 Q545 10 620 96" fill="none" stroke="url(#g-arch)" stroke-width="6" stroke-linecap="round"/>
+      <g fill="currentColor" fill-opacity=".35">
+        <rect x="18" y="96" width="4" height="18"/><rect x="168" y="96" width="4" height="18"/><rect x="318" y="96" width="4" height="18"/><rect x="468" y="96" width="4" height="18"/><rect x="618" y="96" width="4" height="18"/>
+      </g>
+    </svg>
+    <p class="eyebrow">BRIDGE · Rehearsal Studio</p>
+    <h1>발표 리허설</h1>
+    <p class="lede">내 모습, 원고 자막, 시간의 흐름을 한 화면에. 말한 만큼 자막에 색이 채워지고, 지금 속도면 몇 분에 끝날지 막대로 보여 줍니다.</p>
+    <ul id="env" class="env" aria-label="이 기기 지원 현황"></ul>
+  </header>
+
+  <div class="grid">
+    <div class="col col-left">
+    <section class="card card-script">
+      <div class="card-head">
+        <h2><span class="num">1</span>원고</h2>
+        <div class="row-actions">
+          <button type="button" id="btn-sample" class="ghost small">예시 원고</button>
+          <label class="ghost small file-btn">파일 열기<input id="file-script" type="file" accept=".txt,.md,text/plain" hidden></label>
+          <button type="button" id="btn-clear" class="ghost small">지우기</button>
+        </div>
+      </div>
+      <textarea id="script" spellcheck="false" autocomplete="off" placeholder="발표 원고를 붙여넣으세요.&#10;===== 줄로 구간을 나눕니다. '=== 첫 번째 다리'처럼 쓰면 구간 이름이 됩니다."></textarea>
+      <div id="script-summary" class="summary"></div>
+    </section>
+
+    <section class="card card-ladder">
+      <h2>원고 없이 말하기까지</h2>
+      <ol class="ladder">
+        <li><b>전체</b><span>흐름과 시간 감각 잡기 · 2~3회</span></li>
+        <li><b>첫 글자</b><span>어절 첫 글자만 보고 말하기</span></li>
+        <li><b>숨김</b><span>말한 부분만 드러납니다. 4초 막히면 다음 어절을 살짝 보여 줍니다</span></li>
+        <li><b>실전</b><span>숨김 + 탭해서 넘기기, 멈추지 않고 끝까지</span></li>
+      </ol>
+    </section>
+    </div>
+    <div class="col col-right">
+    <section class="card">
+      <h2><span class="num">2</span>시간</h2>
+      <div class="field-row">
+        <div class="field">
+          <span class="label">목표 시간</span>
+          <div class="stepper">
+            <button type="button" data-step="-0.5" aria-label="30초 줄이기">−</button>
+            <input id="target" type="number" min="1" max="15" step="0.5" inputmode="decimal" aria-label="목표 시간(분)">
+            <em>분</em>
+            <button type="button" data-step="0.5" aria-label="30초 늘리기">＋</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="label">최대 녹화</span>
+          <strong class="big">15분</strong>
+        </div>
+      </div>
+      <p class="hint">녹화는 일시정지 시간을 빼고 최대 15분입니다. 14분, 14분 30초에 알려 주고 15분이 되면 저장하며 끝납니다.</p>
+      <details>
+        <summary>구간별 권장 시간 · 기준 속도</summary>
+        <div class="field">
+          <span class="label">기준 속도</span>
+          <div class="inline"><input id="rate" type="number" min="150" max="500" step="10" inputmode="numeric" aria-label="기준 속도"><em>음절/분</em></div>
+        </div>
+        <p class="hint">녹화 첫 15초 동안 예측에 쓰는 속도입니다. 그 뒤로는 실제 말하기 속도로 바뀝니다.</p>
+        <div id="schedule" class="schedule"></div>
+        <button type="button" id="btn-auto" class="ghost small">모두 자동 배분으로</button>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">3</span>자막과 추적</h2>
+      <span class="label">자막 보기</span>
+      <div class="seg" id="level" role="radiogroup" aria-label="자막 보기">
+        <button type="button" data-v="full">전체</button>
+        <button type="button" data-v="hint">첫 글자</button>
+        <button type="button" data-v="hidden">숨김</button>
+      </div>
+      <p class="hint" id="level-hint"></p>
+      <span class="label">위치 따라가기</span>
+      <div class="seg" id="mode" role="radiogroup" aria-label="위치 따라가기">
+        <button type="button" data-v="auto">음성 인식</button>
+        <button type="button" data-v="voice">음성 감지</button>
+        <button type="button" data-v="manual">탭해서 넘기기</button>
+      </div>
+      <p class="hint" id="mode-hint"></p>
+      <p class="local-asr" id="local-asr" hidden></p>
+      <label class="toggle"><input type="checkbox" id="mirror"><span>거울처럼 좌우 반전해서 보기</span></label>
+      <details>
+        <summary>발음 사전 · 금칙어 · 화질</summary>
+        <label class="field col">
+          <span class="label">발음 사전 <small>표기=읽기, 비교할 때만 쓰고 원문은 바꾸지 않습니다</small></span>
+          <textarea id="dict" rows="5" spellcheck="false"></textarea>
+        </label>
+        <label class="field col">
+          <span class="label">금칙어 <small>말하면 화면 테두리가 빨갛게 깜박입니다 (블라인드 심사용)</small></span>
+          <textarea id="forbidden" rows="3" spellcheck="false" placeholder="한 줄에 하나씩&#10;예) 학교 이름, 연구회 실명, 내 이름"></textarea>
+        </label>
+        <label class="field">
+          <span class="label">녹화 화질</span>
+          <select id="quality">
+            <option value="low">절약 · 15분 약 90MB</option>
+            <option value="std">표준 · 15분 약 180MB</option>
+            <option value="high">고화질 · 15분 약 350MB</option>
+          </select>
+        </label>
+      </details>
+    </section>
+
+    </div>
+  </div>
+
+  <div class="cta">
+    <button type="button" id="btn-open" class="primary big-btn">카메라 켜고 연습 화면으로</button>
+    <p id="setup-error" class="error" role="alert" hidden></p>
+  </div>
+
+  <section class="card history">
+    <div class="card-head">
+      <h2>지난 연습</h2>
+      <span id="storage-info" class="muted small-text"></span>
+    </div>
+    <ul id="history" class="history-list"></ul>
+  </section>
+
+  <footer class="foot">
+    영상은 이 기기의 이 브라우저 안에만 저장되고 서버로 올라가지 않습니다. 브라우저 데이터를 지우면 함께 지워지니 중요한 영상은 파일로 저장해 두세요.
+    음성 인식은 브라우저 제공 기능을 쓰며, 브라우저에 따라 음성이 제공 회사 서버에서 처리될 수 있습니다.
+  </footer>
+</main>
+
+<!-- ───────── 2. 연습 화면 ───────── -->
+<section id="stage" class="view stage" hidden>
+  <video id="cam" autoplay muted playsinline></video>
+
+  <!-- 위: 상태 표시줄 + 자막 (카메라 가까이에 두어 시선이 렌즈 쪽에 머물도록) -->
+  <div class="stage-top">
+    <div class="topbar">
+      <div class="rec-state" id="rec-state"><i></i><span>준비</span></div>
+      <div class="top-right">
+        <button type="button" id="asr-chip" class="chip" title="누르면 음성 인식을 다시 켭니다">음성 인식</button>
+        <span class="meter" aria-hidden="true"><i id="meter"></i></span>
+        <button type="button" id="btn-font-down" class="icon" aria-label="자막 작게"><span class="fs-s">가</span></button>
+        <button type="button" id="btn-font-up" class="icon" aria-label="자막 크게"><span class="fs-l">가</span></button>
+        <button type="button" id="btn-full" class="icon" aria-label="전체 화면">⛶</button>
+        <button type="button" id="btn-close" class="icon" aria-label="닫기">✕</button>
+      </div>
+    </div>
+    <div class="subs" id="subs">
+      <p class="sec-label" id="sec-label"></p>
+      <p class="sub-cur" id="sub-cur"></p>
+      <p class="sub-next" id="sub-next"></p>
+    </div>
+  </div>
+
+  <!-- 아래: 시간 · 속도계 · 타임라인 · 조작 -->
+  <div class="stage-bottom">
+    <div id="banner" class="banner" role="status" hidden></div>
+    <div class="dash">
+      <div class="clock">
+        <strong id="elapsed">10:00</strong><span id="clock-sub">남음</span>
+        <small id="clock-left"><span class="el">경과 0:00</span><span class="sep"> · </span><span class="lim">녹화 한도 15:00</span></small>
+      </div>
+      <div class="pace" id="pace" data-level="measuring">
+        <div class="pace-head">
+          <b id="pace-word">속도 재는 중</b>
+          <span id="pace-tip"></span>
+        </div>
+        <div class="pace-gauge" aria-hidden="true">
+          <i class="zone z-slow"></i><i class="zone z-good"></i><i class="zone z-fast"></i>
+          <i class="needle" id="pace-needle"></i>
+        </div>
+        <div class="pace-scale"><span>느림 · 빠르게!</span><span>적정</span><span>빠름 · 천천히!</span></div>
+        <p class="pace-num" id="pace-num"></p>
+      </div>
+    </div>
+    <div class="tl" id="tl"></div>
+    <div class="controls">
+      <button type="button" id="btn-prev" class="ctl" aria-label="이전 문장">◀</button>
+      <button type="button" id="btn-main" class="ctl main">● 녹화 시작</button>
+      <button type="button" id="btn-stop" class="ctl stop" aria-label="종료하고 저장" disabled>■</button>
+      <button type="button" id="btn-next" class="ctl" aria-label="다음 문장">▶</button>
+    </div>
+  </div>
+  <div id="countdown" class="countdown" hidden></div>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+</section>
+
+<!-- ───────── 3. 결과 화면 ───────── -->
+<main id="review" class="view review" hidden></main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

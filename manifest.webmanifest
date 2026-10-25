@@ -1,0 +1,17 @@
+{
+  "name": "BRIDGE 발표 리허설",
+  "short_name": "발표 리허설",
+  "description": "원고 없이 하는 발표를 위한 촬영 연습 앱",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e141b",
+  "theme_color": "#0e141b",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
